@@ -1,0 +1,12 @@
+{
+  "cSpell.words": [
+    "abatilo",
+    "gunicorn",
+    "levelname",
+    "mypy",
+    "psycopg",
+    "pytest",
+    "sqlalchemy",
+    "xdist"
+  ]
+}
