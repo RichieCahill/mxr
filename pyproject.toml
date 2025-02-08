@@ -41,12 +41,19 @@ lint.ignore = [
     "G004",   # (PERM) This is a performers nit
     "COM812", # (TEMP) conflicts when used with the formatter
     "ISC001", # (TEMP) conflicts when used with the formatter
+    "TD003",  # (TEMP) we don't have a issue system yet
+    "FIX002", # (TEMP) for now TODOs are our backlog
 ]
 
 [tool.ruff.lint.per-file-ignores]
 
 "tests/**" = [
     "S101", # (perm) pytest needs asserts
+]
+
+"alembic/**" = [
+    "INP001", # (perm) having a __init__ causes a lsp problem and is not needed for alembic
+    "I001",   # (perm) having a __init__ causes a lsp problem and is not needed for alembic
 ]
 
 [tool.ruff.lint.pydocstyle]
