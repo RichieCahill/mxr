@@ -1,9 +1,12 @@
 {
   "cSpell.words": [
     "abatilo",
+    "drivername",
     "gunicorn",
     "levelname",
+    "MXRDB",
     "mypy",
+    "onupdate",
     "psycopg",
     "pytest",
     "sqlalchemy",
