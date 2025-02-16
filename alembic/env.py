@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import sys
 import logging
-from os import environ
 
 from sqlalchemy import URL, create_engine
 
 from alembic import context
 from mxr.orm import MXRDB, Drinks  # noqa: F401
+from mxr.common import get_url
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -69,19 +69,7 @@ def run_migrations_online(url: URL) -> None:
             context.run_migrations()
 
 
-def get_url() -> URL:
-    """Get the database URL from the environment."""
-    return URL.create(
-        drivername=environ["MXR_DATABASE_DRIVERNAME"],
-        username=environ["MXR_DATABASE_USER"],
-        password=environ["MXR_DATABASE_PASSWORD"],
-        host=environ["MXR_DATABASE_HOST"],
-        port=int(environ["MXR_DATABASE_PORT"]),
-        database=environ["MXR_DATABASE_DATABASE"],
-    )
-
-
-url = get_url()
+url = get_url("MXR")
 
 
 if context.is_offline_mode():
