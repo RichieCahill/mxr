@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mix"
+name = "mxr"
 version = "0.1.0"
 description = ""
 authors = ["Richie Cahill <richie@tmmworkshop.com>"]
