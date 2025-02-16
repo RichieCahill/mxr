@@ -9,6 +9,7 @@ from os import getenv
 from flask import Flask
 from sqlalchemy import create_engine
 
+from mxr.api_v1 import drinks
 from mxr.common import get_url
 
 
@@ -31,5 +32,7 @@ def create_app() -> Flask:
     def hello_world() -> str:
         """Hello world."""
         return "Hello World"
+
+    app.register_blueprint(drinks)
 
     return app
