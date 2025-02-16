@@ -56,11 +56,23 @@ def get_drinks() -> Response:
 def get_drink(id: int) -> Response:
     """Get a drink."""
     with Session(current_app.config["ENGINE"]) as session:
-        raw_drink = session.execute(select(Drinks).where(Drinks.id == id)).scalars().one()
+        drink = session.execute(select(Drinks).where(Drinks.id == id)).scalars().one()
 
-    return Response(status=201, response=json.dumps({"name": raw_drink.name, "id": raw_drink.id}))
+    return Response(
+        status=201,
+        response=json.dumps(
+            {
+                "id": drink.id,
+                "name": drink.name,
+                "garnish": drink.garnish,
+                "ingredients": drink.ingredients,
+                "preparation": drink.preparation,
+            }
+        ),
+    )
 
 
+@drinks.route("/drinks/<int:id>", methods=["PUT"])
 def update_drink(id: int) -> Response:
     """Update a drink."""
     drink_data = request.get_json()

@@ -10,6 +10,10 @@
     "psycopg",
     "pytest",
     "sqlalchemy",
+    "xanax",
     "xdist"
-  ]
+  ],
+  "python.testing.pytestArgs": ["tests"],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }
