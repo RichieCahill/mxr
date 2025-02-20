@@ -65,3 +65,17 @@ class Drinks(TableBase):
     preparation:    Mapped[str]
 
     # fmt: on
+
+class Ingredients(TableBase):
+    """Table for ingredients."""
+
+    __tablename__ = "ingredients"
+
+    # fmt: off
+
+    name:              Mapped[str]
+    alcohol_content:   Mapped[float | None]
+    category:          Mapped[str | None]
+
+    # fmt: on
+π
