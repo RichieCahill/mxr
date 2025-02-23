@@ -78,4 +78,3 @@ class Ingredients(TableBase):
     category:          Mapped[str | None]
 
     # fmt: on
-π
