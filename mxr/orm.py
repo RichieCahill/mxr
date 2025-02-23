@@ -7,9 +7,10 @@ from __future__ import annotations
 from datetime import datetime  # noqa: TC003
 from os import getenv
 
-from sqlalchemy import MetaData
+from sqlalchemy import ForeignKey, MetaData, String
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 from sqlalchemy.ext.declarative import AbstractConcreteBase
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, object_session
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, object_session, relationship
 
 from mxr.common import utc_now
 
@@ -68,3 +69,41 @@ class Drinks(TableBase):
     glass:           Mapped[str | None]
 
     # fmt: on
+
+    drinks_ingredients_associations: Mapped[set[DrinksIngredientsAssociation]] = relationship(
+        back_populates="drink",
+        cascade="all, delete-orphan",
+    )
+
+    ingredients: AssociationProxy[set[Ingredients]] = association_proxy(
+        "drinks_ingredients_associations",
+        "ingredient",
+        creator=lambda ingredient_obj: DrinksIngredientsAssociation(ingredient=ingredient_obj),
+    )
+
+
+class Ingredients(TableBase):
+    """Table for ingredients."""
+
+    __tablename__ = "ingredients"
+
+    # fmt: off
+
+    name:              Mapped[str] = mapped_column("name")
+    alcohol_content:   Mapped[float | None]
+    category:          Mapped[str | None]
+
+    # fmt: on
+
+
+class DrinksIngredientsAssociation(TableBase):
+    """DrinksIngredientsAssociation."""
+
+    __tablename__ = "drinks_ingredients_association"
+    drinks_id: Mapped[int] = mapped_column(ForeignKey("drinks.id"))
+    ingredients_id: Mapped[int] = mapped_column(ForeignKey("ingredients.id"))
+    special_key: Mapped[str | None] = mapped_column(String(50))
+
+    drink: Mapped[Drinks] = relationship(back_populates="drinks_ingredients_associations")
+
+    ingredient: Mapped[Ingredients] = relationship()
