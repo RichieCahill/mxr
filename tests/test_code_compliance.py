@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from re import match
+import re
 from subprocess import PIPE, Popen
 
 
@@ -37,7 +37,7 @@ def test_ruff_format() -> None:
     """Test ruff format."""
     stdout, returncode = bash_wrapper("poetry run ruff format --check .")
     test = stdout.strip()
-    assert match(r"[\d]* files already formatted", test)
+    assert re.match(r"[\d]* files already formatted", test)
     assert returncode == 0
 
 
@@ -45,5 +45,5 @@ def test_mypy_check() -> None:
     """Test mypy check."""
     stdout, returncode = bash_wrapper("poetry run mypy .")
     test = stdout.strip()
-    assert match(r"Success: no issues found in [\d]* source files", test)
+    assert re.match(r"Success: no issues found in [\d]* source files", test)
     assert returncode == 0
