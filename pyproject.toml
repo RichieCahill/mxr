@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mix"
+name = "mxr"
 version = "0.1.0"
 description = ""
 authors = ["Richie Cahill <richie@tmmworkshop.com>"]
@@ -26,6 +26,9 @@ pytest-xdist = "*"
 ruff = "*"
 types-requests = "*"
 
+[tool.poetry.scripts]
+mxr_update = "tools.update:main"
+mxr_run = "tools.run:main"
 
 [build-system]
 requires = ["poetry-core"]
@@ -66,7 +69,7 @@ builtins-ignorelist = ["id"]
 max-args = 9
 
 [tool.coverage.run]
-source = ["system_tools"]
+source = ["tools"]
 
 [tool.coverage.report]
 exclude_lines = [
