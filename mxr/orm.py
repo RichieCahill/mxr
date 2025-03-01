@@ -78,3 +78,4 @@ class Ingredients(TableBase):
     category:          Mapped[str | None]
 
     # fmt: on
+    # Here is a line of comments simply so I can commit. ~MAC
