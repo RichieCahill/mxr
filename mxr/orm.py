@@ -95,7 +95,7 @@ class Ingredients(TableBase):
 
     # fmt: off
 
-    name:              Mapped[str] = mapped_column("name")
+    name:              Mapped[str]
     alcohol_content:   Mapped[float | None]
     category:          Mapped[str | None]
 
