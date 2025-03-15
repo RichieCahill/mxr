@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-# I think we need this hear but I'm not sure
-# TODO(Richie): test once we have a working database
+# This is required because datetime is required during runtime fro sqlalchemy
 from datetime import datetime  # noqa: TC003
 from os import getenv
 
-from sqlalchemy import MetaData
+from sqlalchemy import ForeignKey, Index, MetaData, String, UniqueConstraint
+from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 from sqlalchemy.ext.declarative import AbstractConcreteBase
-from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, object_session
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, object_session, relationship
+from sqlalchemy.orm.collections import attribute_keyed_dict
 
 from mxr.common import utc_now
 
@@ -52,30 +53,72 @@ class TableBase(AbstractConcreteBase, MXRDB, IdTimestampColumns):
     """Base class for all tables."""
 
 
-class Drinks(TableBase):
+class Drink(TableBase):
     """Table for drinks."""
 
     __tablename__ = "drinks"
 
     # fmt: off
 
-    name:           Mapped[str]
-    garnish:        Mapped[str | None]
-    ingredients:    Mapped[str]
-    preparation:    Mapped[str]
+    name:            Mapped[str]
+    preparation:     Mapped[str]
+    alcohol_content: Mapped[float | None]
+    data_source:     Mapped[str | None]
+    drink_type:      Mapped[str | None]
+    garnish:         Mapped[str | None]
+    glass:           Mapped[str | None]
 
     # fmt: on
 
+    drinks_ingredients_associations: Mapped[dict[Ingredient, DrinkIngredientAssociation]] = relationship(
+        "DrinkIngredientAssociation",
+        back_populates="drink",
+        collection_class=attribute_keyed_dict("ingredient"),
+        cascade="all, delete-orphan",
+    )
 
-class Ingredients(TableBase):
+    ingredients: AssociationProxy[dict[Ingredient, str]] = association_proxy(
+        "drinks_ingredients_associations",
+        "measurement",
+        creator=lambda ingredient_obj, measurement_str: DrinkIngredientAssociation(
+            ingredient=ingredient_obj,
+            measurement=measurement_str,
+        ),
+    )
+
+
+class Ingredient(TableBase):
     """Table for ingredients."""
 
     __tablename__ = "ingredients"
+    __table_args__ = (UniqueConstraint("name"),)
 
     # fmt: off
-
     name:              Mapped[str]
     alcohol_content:   Mapped[float | None]
     category:          Mapped[str | None]
 
     # fmt: on
+
+
+class DrinkIngredientAssociation(TableBase):
+    """DrinkIngredientAssociation."""
+
+    __tablename__ = "drink_ingredient_associations"
+    __table_args__ = (
+        UniqueConstraint("drinks_id", "ingredients_id"),
+        Index("drinks_id", "drinks_id"),
+        Index("ingredients_id", "ingredients_id"),
+    )
+
+    # fmt: off
+
+    drinks_id:      Mapped[int] = mapped_column(ForeignKey("drinks.id"))
+    ingredients_id: Mapped[int] = mapped_column(ForeignKey("ingredients.id"))
+    measurement:    Mapped[str] = mapped_column(String(50))
+
+    drink:          Mapped[Drink] = relationship(back_populates="drinks_ingredients_associations")
+
+    ingredient:     Mapped[Ingredient] = relationship()
+
+    # fmt: off

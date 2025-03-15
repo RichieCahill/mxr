@@ -4,12 +4,16 @@ from __future__ import annotations
 
 import sys
 import logging
+from typing import Literal, TYPE_CHECKING
 
 from sqlalchemy import URL, create_engine
 
 from alembic import context
-from mxr.orm import MXRDB, Drinks  # noqa: F401
+from mxr.orm import MXRDB, Drink  # noqa: F401
 from mxr.common import get_url
+
+if TYPE_CHECKING:
+    from collections.abc import MutableMapping
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -48,6 +52,28 @@ def run_migrations_offline(url: URL) -> None:
         context.run_migrations()
 
 
+# This is part of the Alembic specification
+def include_name(
+    name: str | None,
+    type_: Literal["schema", "table", "column", "index", "unique_constraint", "foreign_key_constraint"],
+    parent_names: MutableMapping[Literal["schema_name", "table_name", "schema_qualified_table_name"], str | None],  # noqa: ARG001
+) -> bool:
+    """This filter table to be included in the migration.
+
+    Args:
+        name (str): The name of the table.
+        type_ (str): The type of the table.
+        parent_names (list[str]): The names of the parent tables.
+
+    Returns:
+        bool: True if the table should be included, False otherwise.
+
+    """
+    if type_ == "schema":
+        return name == target_metadata.schema
+    return True
+
+
 def run_migrations_online(url: URL) -> None:
     """Run migrations in 'online' mode.
 
@@ -63,6 +89,7 @@ def run_migrations_online(url: URL) -> None:
             target_metadata=target_metadata,
             include_schemas=True,
             version_table_schema=MXRDB.schema_name,
+            include_name=include_name,
         )
 
         with context.begin_transaction():
